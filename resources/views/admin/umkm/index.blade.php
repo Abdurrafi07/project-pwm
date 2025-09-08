@@ -1,0 +1,255 @@
+@extends('layouts.app')
+
+@section('title', 'Data UMKM')
+
+@section('content')
+<div class="container">
+    <h1 class="mb-4">Daftar UMKM</h1>
+
+    <!-- Grafik Statistik -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>Grafik Pertumbuhan Bulanan ({{ $tahunSekarang }})</h5>
+            <canvas id="chartBulanan"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h5>Grafik Pertumbuhan Tahunan</h5>
+            <canvas id="chartTahunan"></canvas>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>Distribusi UMKM per Daerah</h5>
+            <canvas id="chartDaerah"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h5>Distribusi UMKM per Sektor</h5>
+            <canvas id="chartSektor"></canvas>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>Distribusi UMKM per Kategori</h5>
+            <canvas id="chartKategori"></canvas>
+        </div>
+    </div>
+
+    <!-- Statistik Angka -->
+    <div class="mb-3">
+        <span class="badge bg-primary">Total UMKM: {{ $totalUmkm }}</span>
+        <span class="badge bg-success">Total Karyawan: {{ $totalKaryawan }}</span>
+    </div>
+
+    <!-- Filter Kategori -->
+    <div class="mb-3">
+        <strong>Kategori:</strong>
+        <a href="{{ route('admin.umkm.index') }}" 
+           class="btn btn-sm {{ request('kategori_id') ? 'btn-outline-secondary' : 'btn-primary' }}">
+            Semua
+        </a>
+        @foreach ($kategoris as $kategori)
+            <a href="{{ route('admin.umkm.index', array_merge(request()->query(), ['kategori_id' => $kategori->id])) }}"
+               class="btn btn-sm {{ request('kategori_id') == $kategori->id ? 'btn-primary' : 'btn-outline-secondary' }}">
+                {{ $kategori->nama }}
+            </a>
+        @endforeach
+    </div>
+
+    <!-- Filter Daerah -->
+    <div class="mb-3">
+        <strong>Daerah:</strong>
+        <a href="{{ route('admin.umkm.index', ['kategori_id' => request('kategori_id')]) }}" 
+           class="btn btn-sm {{ request('daerah_id') ? 'btn-outline-secondary' : 'btn-success' }}">
+            Semua
+        </a>
+        @foreach ($daerahs as $daerah)
+            <a href="{{ route('admin.umkm.index', array_merge(request()->query(), ['daerah_id' => $daerah->id])) }}"
+               class="btn btn-sm {{ request('daerah_id') == $daerah->id ? 'btn-success' : 'btn-outline-success' }}">
+                {{ $daerah->nama }}
+            </a>
+        @endforeach
+    </div>
+
+    <!-- Filter Sektor -->
+    <div class="mb-3">
+        <strong>Sektor:</strong>
+        <a href="{{ route('admin.umkm.index', [
+            'kategori_id' => request('kategori_id'),
+            'daerah_id'   => request('daerah_id')
+        ]) }}" 
+        class="btn btn-sm {{ request('sektor_id') ? 'btn-outline-secondary' : 'btn-warning' }}">
+            Semua
+        </a>
+        @foreach ($sektors as $sektor)
+            <a href="{{ route('admin.umkm.index', array_merge(request()->query(), ['sektor_id' => $sektor->id])) }}"
+            class="btn btn-sm {{ request('sektor_id') == $sektor->id ? 'btn-warning' : 'btn-outline-warning' }}">
+                {{ $sektor->nama }}
+            </a>
+        @endforeach
+    </div>
+
+    <a href="{{ route('admin.umkm.create') }}" class="btn btn-primary mb-3">Tambah UMKM</a>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <!-- Tabel Data -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Pemilik</th>
+                <th>No Telp</th>
+                <th>Jumlah Karyawan</th>
+                <th>Kategori</th>
+                <th>Daerah</th>
+                <th>Sektor</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($umkms as $umkm)
+                <tr>
+                    <td>{{ $umkm->id }}</td>
+                    <td>{{ $umkm->nama }}</td>
+                    <td>{{ $umkm->pemilik }}</td>
+                    <td>{{ $umkm->no_telp }}</td>
+                    <td>{{ $umkm->jumlah_karyawan }}</td>
+                    <td>{{ $umkm->kategori->nama }}</td>
+                    <td>{{ $umkm->daerah->nama }}</td>
+                    <td>{{ $umkm->sektor->nama }}</td>
+                    <td>
+                        <a href="{{ route('admin.umkm.edit', $umkm) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('admin.umkm.destroy', $umkm) }}" method="POST" class="d-inline">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{ $umkms->withQueryString()->links('layouts.pagination') }}
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Data Bulanan
+        let dataBulanan = Array(12).fill(0);
+        const statistikBulanan = @json($statistikBulanan);
+
+        // isi per bulan dari backend
+        for (const [bulan, total] of Object.entries(statistikBulanan)) {
+            dataBulanan[bulan - 1] = total;
+        }
+
+        // ubah ke akumulasi (running total)
+        for (let i = 1; i < dataBulanan.length; i++) {
+            dataBulanan[i] += dataBulanan[i - 1];
+        }
+
+        new Chart(document.getElementById('chartBulanan'), {
+            type: 'line',
+            data: {
+                labels: [
+                    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+                ],
+                datasets: [{
+                    label: 'Total UMKM Akumulasi',
+                    data: dataBulanan,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.3,
+                    fill: false
+                }]
+            }
+        });
+
+        // Data Tahunan (langsung dari DB, biasanya sudah akumulasi per tahun)
+        const tahunLabels = Object.keys(@json($statistikTahunan));
+        const tahunData   = Object.values(@json($statistikTahunan));
+
+        new Chart(document.getElementById('chartTahunan'), {
+            type: 'line',
+            data: {
+                labels: tahunLabels,
+                datasets: [{
+                    label: 'Total UMKM Tahunan',
+                    data: tahunData,
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    tension: 0.3,
+                    fill: false
+                }]
+            }
+        });
+
+        // Pie Chart Daerah
+        const daerahLabels = @json($daerahs->pluck('nama'));
+        const daerahData   = @json($daerahCounts);
+
+        new Chart(document.getElementById('chartDaerah'), {
+            type: 'pie',
+            data: {
+                labels: daerahLabels,
+                datasets: [{
+                    label: 'UMKM per Daerah',
+                    data: daerahData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ]
+                }]
+            }
+        });
+
+        // Bar Chart Sektor
+        const sektorLabels = @json($sektors->pluck('nama'));
+        const sektorData   = @json($sektorCounts);
+
+        new Chart(document.getElementById('chartSektor'), {
+            type: 'bar',
+            data: {
+                labels: sektorLabels,
+                datasets: [{
+                    label: 'UMKM per Sektor',
+                    data: sektorData,
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)'
+                }]
+            }
+        });
+    });
+
+    // Pie Chart Kategori
+    const kategoriLabels = @json($kategoriLabels);
+    const kategoriData   = @json($kategoriCounts);
+
+    new Chart(document.getElementById('chartKategori'), {
+        type: 'pie',
+        data: {
+            labels: kategoriLabels,
+            datasets: [{
+                label: 'UMKM per Kategori',
+                data: kategoriData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)'
+                ]
+            }]
+        }
+    });
+    </script>
+@endsection
