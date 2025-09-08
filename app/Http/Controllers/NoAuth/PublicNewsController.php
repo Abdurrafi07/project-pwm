@@ -10,7 +10,7 @@ class PublicNewsController extends Controller
 {
     public function index()
     {
-        // Ambil semua data news, urut terbaru
+        // Ambil semua berita terbaru
         $news = News::latest()->get();
 
         return view('noauth.news.index', compact('news'));
@@ -19,8 +19,8 @@ class PublicNewsController extends Controller
     public function show($id)
     {
         // Cari berita berdasarkan id
-        $news = News::findOrFail($id);
+        $mainNews = News::findOrFail($id);
 
-        return view('noauth.news.show', compact('news'));
+        return view('noauth.news.show', compact('mainNews'));
     }
 }
