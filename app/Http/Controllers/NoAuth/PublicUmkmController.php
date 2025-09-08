@@ -124,7 +124,7 @@ public function index(Request $request)
     $sektorLabels = $sektorData->pluck('label');
     $sektorCounts = $sektorData->pluck('total');
 
-    return view('admin.umkm.index', compact(
+    return view('noauth.umkm.index', compact(
         'umkms',
         'totalUmkm',
         'totalKaryawan',
