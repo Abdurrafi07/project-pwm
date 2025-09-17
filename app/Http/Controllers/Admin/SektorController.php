@@ -25,8 +25,14 @@ class SektorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|unique:sektors,nama|max:100',
-            'deskripsi' => 'nullable|string',
+            'nama'      => 'required|min:3|max:50|unique:sektors,nama',
+            'deskripsi' => 'nullable|string|min:10',
+        ], [
+            'nama.required'      => 'Nama sektor wajib diisi.',
+            'nama.min'           => 'Nama sektor minimal 3 karakter.',
+            'nama.max'           => 'Nama sektor maksimal 50 karakter.',
+            'nama.unique'        => 'Nama sektor sudah digunakan, pilih yang lain.',
+            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
         ]);
 
         Sektor::create($request->only('nama', 'deskripsi'));
@@ -43,8 +49,14 @@ class SektorController extends Controller
     public function update(Request $request, Sektor $sektor)
     {
         $request->validate([
-            'nama' => 'required|max:100|unique:sektors,nama,' . $sektor->id,
-            'deskripsi' => 'nullable|string',
+            'nama'      => 'required|min:3|max:100|unique:sektors,nama,' . $sektor->id,
+            'deskripsi' => 'nullable|string|min:10',
+        ], [
+            'nama.required'      => 'Nama sektor wajib diisi.',
+            'nama.min'           => 'Nama sektor minimal 3 karakter.',
+            'nama.max'           => 'Nama sektor maksimal 100 karakter.',
+            'nama.unique'        => 'Nama sektor sudah digunakan, pilih yang lain.',
+            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
         ]);
 
         $sektor->update($request->only('nama', 'deskripsi'));

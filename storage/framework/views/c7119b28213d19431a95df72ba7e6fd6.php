@@ -2,7 +2,40 @@
     
     <?php if(auth()->guard()->guest()): ?>
         <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('home') ? 'active' : ''); ?>" href="<?php echo e(route('home')); ?>">Home</a></li>
-        <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('noauth.umkm.index') ? 'active' : ''); ?>" href="<?php echo e(route('noauth.umkm.index')); ?>">UMKM</a></li>
+
+        
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle <?php echo e(request()->routeIs('noauth.umkm.index') ? 'active' : ''); ?>"
+               href="<?php echo e(route('noauth.umkm.index')); ?>"
+               id="navbarUmkm"
+               role="button"
+               data-bs-toggle="<?php echo e(request()->routeIs('noauth.umkm.index') ? 'dropdown' : ''); ?>"
+               aria-expanded="false">
+                UMKM
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarUmkm">
+                <li>
+                    <a class="dropdown-item <?php echo e(request('daerah_id') ? '' : 'active'); ?>" 
+                       href="<?php echo e(route('noauth.umkm.index', ['kategori_id' => request('kategori_id')])); ?>">
+                        Semua Daerah
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <?php $__currentLoopData = $daerahList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $daerah): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <li>
+                        <a class="dropdown-item <?php echo e(request('daerah_id') == $daerah->id ? 'active' : ''); ?>" 
+                        href="<?php echo e(route('noauth.umkm.index', [
+                                'daerah_id' => $daerah->id,
+                                'kategori_id' => null
+                        ])); ?>">
+                            <?php echo e($daerah->nama); ?>
+
+                        </a>
+                    </li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </ul>
+        </li>
+
         <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('noauth.pengurus.index') ? 'active' : ''); ?>" href="<?php echo e(route('noauth.pengurus.index')); ?>">Pengurus</a></li>
         <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('noauth.news.index') ? 'active' : ''); ?>" href="<?php echo e(route('noauth.news.index')); ?>">News</a></li>
 

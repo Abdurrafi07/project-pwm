@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller; // ← ini penting
+use App\Http\Controllers\Controller;
 use App\Models\Daerah;
 use Illuminate\Http\Request;
 
@@ -25,8 +25,15 @@ class DaerahController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|unique:daerahs,nama|max:100',
-            'deskripsi' => 'nullable|string',
+            'nama'      => 'required|string|min:3|max:100|unique:daerahs,nama',
+            'deskripsi' => 'required|string|min:10',
+        ], [
+            'nama.required'      => 'Nama daerah wajib diisi.',
+            'nama.min'           => 'Nama daerah minimal 3 karakter.',
+            'nama.max'           => 'Nama daerah maksimal 100 karakter.',
+            'nama.unique'        => 'Nama daerah sudah digunakan.',
+            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
         ]);
 
         Daerah::create($request->only('nama', 'deskripsi'));
@@ -43,8 +50,15 @@ class DaerahController extends Controller
     public function update(Request $request, Daerah $daerah)
     {
         $request->validate([
-            'nama' => 'required|max:100|unique:daerahs,nama,' . $daerah->id,
-            'deskripsi' => 'nullable|string',
+            'nama'      => 'required|string|min:3|max:100|unique:daerahs,nama,' . $daerah->id,
+            'deskripsi' => 'required|string|min:10',
+        ], [
+            'nama.required'      => 'Nama daerah wajib diisi.',
+            'nama.min'           => 'Nama daerah minimal 3 karakter.',
+            'nama.max'           => 'Nama daerah maksimal 100 karakter.',
+            'nama.unique'        => 'Nama daerah sudah digunakan.',
+            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
         ]);
 
         $daerah->update($request->only('nama', 'deskripsi'));

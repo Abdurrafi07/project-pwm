@@ -6,14 +6,33 @@
     <h1>Edit Kategori</h1>
     <form action="{{ route('admin.kategori.update', $kategori) }}" method="POST">
         @csrf @method('PUT')
+
         <div class="mb-3">
             <label for="nama" class="form-label">Nama</label>
-            <input type="text" name="nama" value="{{ old('nama', $kategori->nama) }}" class="form-control" required>
+            <input 
+                type="text" 
+                name="nama" 
+                value="{{ old('nama', $kategori->nama) }}" 
+                class="form-control @error('nama') is-invalid @enderror" 
+                required
+            >
+            @error('nama')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
+
         <div class="mb-3">
             <label for="deskripsi" class="form-label">Deskripsi</label>
-            <textarea name="deskripsi" class="form-control">{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
+            <textarea 
+                name="deskripsi" 
+                class="form-control @error('deskripsi') is-invalid @enderror" 
+                required
+            >{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
+            @error('deskripsi')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
+
         <button type="submit" class="btn btn-success">Update</button>
         <a href="{{ route('admin.kategori.index') }}" class="btn btn-secondary">Batal</a>
     </form>

@@ -158,12 +158,28 @@ public function index(Request $request)
         $request->validate([
             'nama'            => 'required|string|max:150',
             'pemilik'         => 'nullable|string|max:100',
-            'alamat'          => 'nullable|string',
-            'no_telp'         => 'nullable|string|max:20',
-            'jumlah_karyawan' => 'nullable|integer|min:0',
+            'alamat'          => 'nullable|string|max:255',
+            'no_telp'         => 'nullable|digits_between:10,13|regex:/^[0-9]+$/',
+            'jumlah_karyawan' => 'nullable|integer|min:0|max:100000',
             'kategori_id'     => 'required|exists:kategoris,id',
             'daerah_id'       => 'required|exists:daerahs,id',
             'sektor_id'       => 'required|exists:sektors,id',
+        ], [
+            'nama.required'            => 'Nama UMKM wajib diisi.',
+            'nama.max'                 => 'Nama maksimal 150 karakter.',
+            'pemilik.max'              => 'Nama pemilik maksimal 100 karakter.',
+            'alamat.max'               => 'Alamat maksimal 255 karakter.',
+            'no_telp.digits_between'   => 'Nomor telepon harus 10–13 digit.',
+            'no_telp.regex'            => 'Nomor telepon hanya boleh berisi angka.',
+            'jumlah_karyawan.integer'  => 'Jumlah karyawan harus berupa angka.',
+            'jumlah_karyawan.min'      => 'Jumlah karyawan minimal 0.',
+            'jumlah_karyawan.max'      => 'Jumlah karyawan terlalu besar.',
+            'kategori_id.required'     => 'Kategori wajib dipilih.',
+            'kategori_id.exists'       => 'Kategori tidak valid.',
+            'daerah_id.required'       => 'Daerah wajib dipilih.',
+            'daerah_id.exists'         => 'Daerah tidak valid.',
+            'sektor_id.required'       => 'Sektor wajib dipilih.',
+            'sektor_id.exists'         => 'Sektor tidak valid.',
         ]);
 
         Umkm::create($request->only([
@@ -178,28 +194,36 @@ public function index(Request $request)
         ]));
 
         return redirect()->route('admin.umkm.index')
-                         ->with('success', 'Data UMKM berhasil ditambahkan');
-    }
+                        ->with('success', 'Data UMKM berhasil ditambahkan');
+        }
 
-    public function edit(Umkm $umkm)
-    {
-        $kategoris = Kategori::all();
-        $daerahs   = Daerah::all();
-        $sektors   = Sektor::all();
-        return view('admin.umkm.edit', compact('umkm', 'kategoris', 'daerahs', 'sektors'));
-    }
-
-    public function update(Request $request, Umkm $umkm)
-    {
+        public function update(Request $request, Umkm $umkm)
+        {
         $request->validate([
             'nama'            => 'required|string|max:150',
             'pemilik'         => 'nullable|string|max:100',
-            'alamat'          => 'nullable|string',
-            'no_telp'         => 'nullable|string|max:20',
-            'jumlah_karyawan' => 'nullable|integer|min:0',
+            'alamat'          => 'nullable|string|max:255',
+            'no_telp'         => 'nullable|digits_between:10,13|regex:/^[0-9]+$/',
+            'jumlah_karyawan' => 'nullable|integer|min:0|max:100000',
             'kategori_id'     => 'required|exists:kategoris,id',
             'daerah_id'       => 'required|exists:daerahs,id',
             'sektor_id'       => 'required|exists:sektors,id',
+        ], [
+            'nama.required'            => 'Nama UMKM wajib diisi.',
+            'nama.max'                 => 'Nama maksimal 150 karakter.',
+            'pemilik.max'              => 'Nama pemilik maksimal 100 karakter.',
+            'alamat.max'               => 'Alamat maksimal 255 karakter.',
+            'no_telp.digits_between'   => 'Nomor telepon harus 10–13 digit.',
+            'no_telp.regex'            => 'Nomor telepon hanya boleh berisi angka.',
+            'jumlah_karyawan.integer'  => 'Jumlah karyawan harus berupa angka.',
+            'jumlah_karyawan.min'      => 'Jumlah karyawan minimal 0.',
+            'jumlah_karyawan.max'      => 'Jumlah karyawan terlalu besar.',
+            'kategori_id.required'     => 'Kategori wajib dipilih.',
+            'kategori_id.exists'       => 'Kategori tidak valid.',
+            'daerah_id.required'       => 'Daerah wajib dipilih.',
+            'daerah_id.exists'         => 'Daerah tidak valid.',
+            'sektor_id.required'       => 'Sektor wajib dipilih.',
+            'sektor_id.exists'         => 'Sektor tidak valid.',
         ]);
 
         $umkm->update($request->only([
@@ -211,11 +235,12 @@ public function index(Request $request)
             'kategori_id',
             'daerah_id',
             'sektor_id',
-        ]));
+    ]));
 
         return redirect()->route('admin.umkm.index')
-                         ->with('success', 'Data UMKM berhasil diperbarui');
+                        ->with('success', 'Data UMKM berhasil diperbarui');
     }
+
 
     public function destroy(Umkm $umkm)
     {

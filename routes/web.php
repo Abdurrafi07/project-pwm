@@ -17,6 +17,8 @@ use App\Http\Controllers\NoAuth\PublicUmkmController;
 use App\Http\Controllers\Admin\SektorController;
 use App\Http\Controllers\NoAuth\PublicPengurusController;
 use App\Http\Controllers\NoAuth\PublicNewsController;
+use App\Http\Controllers\Admin\LowonganController;
+use App\Http\Controllers\NoAuth\PublicLowonganController;
 
 // =========================
 // Public Routes
@@ -28,6 +30,8 @@ Route::get('/umkm', [PublicUmkmController::class, 'index'])->name('noauth.umkm.i
 Route::get('/pengurus', [PublicPengurusController::class, 'index'])->name('noauth.pengurus.index');
 Route::get('/news', [PublicNewsController::class, 'index'])->name('noauth.news.index');
 Route::get('/news/{id}', [PublicNewsController::class, 'show'])->name('noauth.news.show');
+Route::get('/lowongan', [PublicLowonganController::class, 'index'])->name('noauth.lowongan.index');
+Route::get('/lowongan/{lowongan}', [PublicLowonganController::class, 'show'])->name('noauth.lowongan.show');
 
 // After registration or approval status
 Route::get('/pending-approval', [HomeController::class, 'pendingApproval'])->name('pending-approval');
@@ -65,7 +69,11 @@ Route::middleware(['auth', 'admin', 'active'])
             'news'     => NewsController::class,
             'penguruses' => PengurusController::class,
             'sektor'   => SektorController::class,
+            'lowongan' => LowonganController::class,
         ]);
+
+        // Lowongan management
+        Route::get('lowongan-history', [LowonganController::class, 'history'])->name('lowongan.history');
 
         // User management
         Route::prefix('users')->group(function () {

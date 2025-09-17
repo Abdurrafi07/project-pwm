@@ -8,12 +8,30 @@
         @csrf
         <div class="mb-3">
             <label for="nama" class="form-label">Nama</label>
-            <input type="text" name="nama" class="form-control" required>
+            <input 
+                type="text" 
+                name="nama" 
+                class="form-control @error('nama') is-invalid @enderror" 
+                value="{{ old('nama') }}" 
+                required
+            >
+            @error('nama')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
+
         <div class="mb-3">
             <label for="deskripsi" class="form-label">Deskripsi</label>
-            <textarea name="deskripsi" class="form-control"></textarea>
+            <textarea 
+                name="deskripsi" 
+                class="form-control @error('deskripsi') is-invalid @enderror"
+                required
+            >{{ old('deskripsi') }}</textarea>
+            @error('deskripsi')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
+
         <button type="submit" class="btn btn-success">Simpan</button>
         <a href="{{ route('admin.kategori.index') }}" class="btn btn-secondary">Batal</a>
     </form>

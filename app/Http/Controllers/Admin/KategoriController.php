@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller; // ← ini penting
+use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 
@@ -26,8 +26,15 @@ class KategoriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|unique:kategoris,nama|max:100',
-            'deskripsi' => 'nullable|string',
+            'nama'      => 'required|string|min:3|max:100|unique:kategoris,nama',
+            'deskripsi' => 'required|string|min:10',
+        ], [
+            'nama.required'      => 'Nama kategori wajib diisi.',
+            'nama.min'           => 'Nama kategori minimal 3 karakter.',
+            'nama.max'           => 'Nama kategori maksimal 100 karakter.',
+            'nama.unique'        => 'Nama kategori sudah digunakan.',
+            'deskripsi.required' => 'Deskripsi kategori wajib diisi.',
+            'deskripsi.min'      => 'Deskripsi kategori minimal 10 karakter.',
         ]);
 
         Kategori::create($request->only('nama', 'deskripsi'));
@@ -44,8 +51,15 @@ class KategoriController extends Controller
     public function update(Request $request, Kategori $kategori)
     {
         $request->validate([
-            'nama' => 'required|max:100|unique:kategoris,nama,' . $kategori->id,
-            'deskripsi' => 'nullable|string',
+            'nama'      => 'required|string|min:3|max:100|unique:kategoris,nama,' . $kategori->id,
+            'deskripsi' => 'required|string|min:10',
+        ], [
+            'nama.required'      => 'Nama kategori wajib diisi.',
+            'nama.min'           => 'Nama kategori minimal 3 karakter.',
+            'nama.max'           => 'Nama kategori maksimal 100 karakter.',
+            'nama.unique'        => 'Nama kategori sudah digunakan.',
+            'deskripsi.required' => 'Deskripsi kategori wajib diisi.',
+            'deskripsi.min'      => 'Deskripsi kategori minimal 10 karakter.',
         ]);
 
         $kategori->update($request->only('nama', 'deskripsi'));

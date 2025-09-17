@@ -1,40 +1,10 @@
 
 
-<?php $__env->startSection('title', 'Data UMKM'); ?>
+<?php $__env->startSection('title', 'Daftar UMKM'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="container">
+<div class="container mt-4">
     <h1 class="mb-4">Daftar UMKM</h1>
-
-    <!-- Grafik Statistik -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h5>Grafik Pertumbuhan Bulanan (<?php echo e($tahunSekarang); ?>)</h5>
-            <canvas id="chartBulanan"></canvas>
-        </div>
-        <div class="col-md-6">
-            <h5>Grafik Pertumbuhan Tahunan</h5>
-            <canvas id="chartTahunan"></canvas>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h5>Distribusi UMKM per Daerah</h5>
-            <canvas id="chartDaerah"></canvas>
-        </div>
-        <div class="col-md-6">
-            <h5>Distribusi UMKM per Sektor</h5>
-            <canvas id="chartSektor"></canvas>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h5>Distribusi UMKM per Kategori</h5>
-            <canvas id="chartKategori"></canvas>
-        </div>
-    </div>
 
     <!-- Statistik Angka -->
     <div class="mb-3">
@@ -42,105 +12,124 @@
         <span class="badge bg-success">Total Karyawan: <?php echo e($totalKaryawan); ?></span>
     </div>
 
-    <!-- Filter Kategori -->
-    <!-- <div class="mb-3">
-        <strong>Kategori:</strong>
-        <a href="<?php echo e(route('noauth.umkm.index')); ?>" 
-           class="btn btn-sm <?php echo e(request('kategori_id') ? 'btn-outline-secondary' : 'btn-primary'); ?>">
-            Semua
-        </a>
-        <?php $__currentLoopData = $kategoris; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $kategori): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <a href="<?php echo e(route('noauth.umkm.index', array_merge(request()->query(), ['kategori_id' => $kategori->id]))); ?>"
-               class="btn btn-sm <?php echo e(request('kategori_id') == $kategori->id ? 'btn-primary' : 'btn-outline-secondary'); ?>">
-                <?php echo e($kategori->nama); ?>
-
-            </a>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </div> -->
-
-    <!-- Filter Daerah -->
-    <div class="mb-3">
-        <strong>Daerah:</strong>
-        <a href="<?php echo e(route('noauth.umkm.index', ['kategori_id' => request('kategori_id')])); ?>" 
-           class="btn btn-sm <?php echo e(request('daerah_id') ? 'btn-outline-secondary' : 'btn-success'); ?>">
-            Semua
-        </a>
-        <?php $__currentLoopData = $daerahs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $daerah): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <a href="<?php echo e(route('noauth.umkm.index', array_merge(request()->query(), ['daerah_id' => $daerah->id]))); ?>"
-               class="btn btn-sm <?php echo e(request('daerah_id') == $daerah->id ? 'btn-success' : 'btn-outline-success'); ?>">
-                <?php echo e($daerah->nama); ?>
-
-            </a>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <!-- Grafik Pertumbuhan -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    Grafik Pertumbuhan Bulanan (<?php echo e($tahunSekarang); ?>)
+                </div>
+                <div class="card-body">
+                    <canvas id="chartBulanan"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    Grafik Pertumbuhan Tahunan
+                </div>
+                <div class="card-body">
+                    <canvas id="chartTahunan"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Filter Sektor -->
-    <!-- <div class="mb-3">
-        <strong>Sektor:</strong>
-        <a href="<?php echo e(route('noauth.umkm.index', [
-            'kategori_id' => request('kategori_id'),
-            'daerah_id'   => request('daerah_id')
-        ])); ?>" 
-        class="btn btn-sm <?php echo e(request('sektor_id') ? 'btn-outline-secondary' : 'btn-warning'); ?>">
-            Semua
-        </a>
-        <?php $__currentLoopData = $sektors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sektor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <a href="<?php echo e(route('noauth.umkm.index', array_merge(request()->query(), ['sektor_id' => $sektor->id]))); ?>"
-            class="btn btn-sm <?php echo e(request('sektor_id') == $sektor->id ? 'btn-warning' : 'btn-outline-warning'); ?>">
-                <?php echo e($sektor->nama); ?>
+    <!-- Grafik Distribusi -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">UMKM per Daerah</div>
+                <div class="card-body">
+                    <canvas id="chartDaerah"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">UMKM per Sektor</div>
+                <div class="card-body">
+                    <canvas id="chartSektor"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">UMKM per Kategori</div>
+                <div class="card-body">
+                    <canvas id="chartKategori"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            </a>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </div> -->
+    <!-- Tabel UMKM -->
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-dark text-white">Data UMKM</div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama UMKM</th>
+                        <th>Daerah</th>
+                        <th>Sektor</th>
+                        <th>Kategori</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $__empty_1 = true; $__currentLoopData = $umkms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $umkm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <tr>
+                            <td><?php echo e($loop->iteration + ($umkms->currentPage() - 1) * $umkms->perPage()); ?></td>
+                            <td><?php echo e($umkm->nama); ?></td>
+                            <td><?php echo e($umkm->daerah->nama ?? '-'); ?></td>
+                            <td><?php echo e($umkm->sektor->nama ?? '-'); ?></td>
+                            <td><?php echo e($umkm->kategori->nama ?? '-'); ?></td>
+                        </tr>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Tidak ada data UMKM</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
 
-    <!-- Tabel Data -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Pemilik</th>
-                <th>No Telp</th>
-                <th>Jumlah Karyawan</th>
-                <th>Kategori</th>
-                <th>Daerah</th>
-                <th>Sektor</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php $__currentLoopData = $umkms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $umkm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <tr>
-                    <td><?php echo e($umkm->id); ?></td>
-                    <td><?php echo e($umkm->nama); ?></td>
-                    <td><?php echo e($umkm->pemilik); ?></td>
-                    <td><?php echo e($umkm->no_telp); ?></td>
-                    <td><?php echo e($umkm->jumlah_karyawan); ?></td>
-                    <td><?php echo e($umkm->kategori->nama); ?></td>
-                    <td><?php echo e($umkm->daerah->nama); ?></td>
-                    <td><?php echo e($umkm->sektor->nama); ?></td>
-                </tr>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        </tbody>
-    </table>
+            <div class="d-flex justify-content-center">
+                <?php echo e($umkms->links('layouts.pagination')); ?>
 
-    <?php echo e($umkms->withQueryString()->links('layouts.pagination')); ?>
-
+            </div>
+        </div>
+    </div>
 </div>
+<?php $__env->stopSection(); ?>
 
-<!-- Chart.js -->
+<?php $__env->startSection('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // ==== Helper redirect dengan query param ====
+    function applyFilter(param, value) {
+        let url = new URL(window.location.href);
+
+        if (value) {
+            url.searchParams.set(param, value);
+        } else {
+            url.searchParams.delete(param);
+        }
+
+        url.searchParams.delete('page'); // reset pagination
+
+        window.location.href = url.toString();
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
-        // Data Bulanan
+        // ==== Grafik Pertumbuhan Bulanan ====
         let dataBulanan = Array(12).fill(0);
         const statistikBulanan = <?php echo json_encode($statistikBulanan, 15, 512) ?>;
 
-        // isi per bulan dari backend
         for (const [bulan, total] of Object.entries(statistikBulanan)) {
             dataBulanan[bulan - 1] = total;
         }
-
-        // ubah ke akumulasi (running total)
         for (let i = 1; i < dataBulanan.length; i++) {
             dataBulanan[i] += dataBulanan[i - 1];
         }
@@ -148,10 +137,7 @@
         new Chart(document.getElementById('chartBulanan'), {
             type: 'line',
             data: {
-                labels: [
-                    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-                ],
+                labels: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
                 datasets: [{
                     label: 'Total UMKM Akumulasi',
                     data: dataBulanan,
@@ -162,7 +148,7 @@
             }
         });
 
-        // Data Tahunan (langsung dari DB, biasanya sudah akumulasi per tahun)
+        // ==== Grafik Pertumbuhan Tahunan ====
         const tahunLabels = Object.keys(<?php echo json_encode($statistikTahunan, 15, 512) ?>);
         const tahunData   = Object.values(<?php echo json_encode($statistikTahunan, 15, 512) ?>);
 
@@ -180,17 +166,13 @@
             }
         });
 
-        // Pie Chart Daerah
-        const daerahLabels = <?php echo json_encode($daerahs->pluck('nama'), 15, 512) ?>;
-        const daerahData   = <?php echo json_encode($daerahCounts, 15, 512) ?>;
-
-        new Chart(document.getElementById('chartDaerah'), {
+        // ==== Chart Daerah ====
+        const daerahChart = new Chart(document.getElementById('chartDaerah'), {
             type: 'pie',
             data: {
-                labels: daerahLabels,
+                labels: <?php echo json_encode($daerahLabels, 15, 512) ?>,
                 datasets: [{
-                    label: 'UMKM per Daerah',
-                    data: daerahData,
+                    data: <?php echo json_encode($daerahCounts, 15, 512) ?>,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.6)',
                         'rgba(54, 162, 235, 0.6)',
@@ -199,49 +181,68 @@
                         'rgba(153, 102, 255, 0.6)'
                     ]
                 }]
+            },
+            options: {
+                onClick: (evt, elements) => {
+                    if (elements.length > 0) {
+                        let index = elements[0].index;
+                        let daerahId = <?php echo json_encode($daerahs->pluck('id'), 15, 512) ?>[index];
+                        applyFilter('daerah_id', daerahId);
+                    }
+                }
             }
         });
 
-        // Bar Chart Sektor
-        const sektorLabels = <?php echo json_encode($sektors->pluck('nama'), 15, 512) ?>;
-        const sektorData   = <?php echo json_encode($sektorCounts, 15, 512) ?>;
-
-        new Chart(document.getElementById('chartSektor'), {
+        // ==== Chart Sektor ====
+        const sektorChart = new Chart(document.getElementById('chartSektor'), {
             type: 'bar',
             data: {
-                labels: sektorLabels,
+                labels: <?php echo json_encode($sektorLabels, 15, 512) ?>,
                 datasets: [{
-                    label: 'UMKM per Sektor',
-                    data: sektorData,
+                    data: <?php echo json_encode($sektorCounts, 15, 512) ?>,
                     backgroundColor: 'rgba(255, 159, 64, 0.6)'
                 }]
+            },
+            options: {
+                onClick: (evt, elements) => {
+                    if (elements.length > 0) {
+                        let index = elements[0].index;
+                        let sektorId = <?php echo json_encode($sektors->pluck('id'), 15, 512) ?>[index];
+                        applyFilter('sektor_id', sektorId);
+                    }
+                }
+            }
+        });
+
+        // ==== Chart Kategori ====
+        const kategoriChart = new Chart(document.getElementById('chartKategori'), {
+            type: 'pie',
+            data: {
+                labels: <?php echo json_encode($kategoriLabels, 15, 512) ?>,
+                datasets: [{
+                    data: <?php echo json_encode($kategoriCounts, 15, 512) ?>,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                onClick: (evt, elements) => {
+                    if (elements.length > 0) {
+                        let index = elements[0].index;
+                        let kategoriId = <?php echo json_encode($kategoris->pluck('id'), 15, 512) ?>[index];
+                        applyFilter('kategori_id', kategoriId);
+                    }
+                }
             }
         });
     });
-
-    // Pie Chart Kategori
-    const kategoriLabels = <?php echo json_encode($kategoriLabels, 15, 512) ?>;
-    const kategoriData   = <?php echo json_encode($kategoriCounts, 15, 512) ?>;
-
-    new Chart(document.getElementById('chartKategori'), {
-        type: 'pie',
-        data: {
-            labels: kategoriLabels,
-            datasets: [{
-                label: 'UMKM per Kategori',
-                data: kategoriData,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)'
-                ]
-            }]
-        }
-    });
-    </script>
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\project-pwm\resources\views\noauth\umkm\index.blade.php ENDPATH**/ ?>

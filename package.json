@@ -26,6 +26,8 @@
         "test": "tests"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.0.1",
+        "@popperjs/core": "^2.11.8",
         "ansi-regex": "^6.2.0",
         "ansi-styles": "^4.3.0",
         "any-promise": "^1.3.0",
@@ -34,6 +36,7 @@
         "asynckit": "^0.4.0",
         "balanced-match": "^1.0.2",
         "binary-extensions": "^2.3.0",
+        "bootstrap": "^5.3.8",
         "brace-expansion": "^2.0.2",
         "braces": "^3.0.3",
         "browserslist": "^4.25.4",
