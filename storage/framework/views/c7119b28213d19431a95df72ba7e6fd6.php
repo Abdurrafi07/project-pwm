@@ -37,6 +37,7 @@
         </li>
 
         <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('noauth.pengurus.index') ? 'active' : ''); ?>" href="<?php echo e(route('noauth.pengurus.index')); ?>">Pengurus</a></li>
+        <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('noauth.lowongan.index') ? 'active' : ''); ?>" href="<?php echo e(route('noauth.lowongan.index')); ?>">Lowongan</a></li>
         <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('noauth.news.index') ? 'active' : ''); ?>" href="<?php echo e(route('noauth.news.index')); ?>">News</a></li>
 
         <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('login') ? 'active' : ''); ?>" href="<?php echo e(route('login')); ?>"><i class="fas fa-sign-in-alt me-1"></i>Login</a></li>
@@ -66,6 +67,7 @@
             <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('admin.sektor.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.sektor.index')); ?>"><i class="fas fa-industry me-1"></i>Sektor</a></li>
             <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('admin.umkm.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.umkm.index')); ?>"><i class="fas fa-store me-1"></i>UMKM</a></li>
             <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('admin.berita.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.news.index')); ?>"><i class="fas fa-file-alt me-1"></i>Berita</a></li>
+            <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('admin.lowongan.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.lowongan.index')); ?>"><i class="fas fa-briefcase me-1"></i>Lowongan</a></li>
             <li class="nav-item"><a class="nav-link <?php echo e(request()->routeIs('admin.penguruses.index') ? 'active' : ''); ?>" href="<?php echo e(route('admin.penguruses.index')); ?>"><i class="fas fa-users-cog me-1"></i>Pengurus</a></li>
             <li class="nav-item">
                 <form method="POST" action="<?php echo e(route('logout')); ?>">

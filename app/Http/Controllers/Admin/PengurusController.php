@@ -23,22 +23,43 @@ class PengurusController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama'      => 'required|unique:penguruses,nama|min:3|max:100',
+            'nama'=> [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:penguruses,nama',
+            ],
             'jabatan'   => 'required|min:3|max:100',
-            'deskripsi' => 'required|string|min:10',
-            'gambar'    => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'deskripsi' => 'nullable|string|min:10|max:500',
+            'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar_temp' => 'nullable|string'
         ], [
-            'nama.required'      => 'Nama wajib diisi.',
-            'nama.min'           => 'Nama minimal 3 karakter.',
-            'jabatan.required'   => 'Jabatan wajib diisi.',
-            'jabatan.min'        => 'Jabatan minimal 3 karakter.',
-            'deskripsi.required' => 'Deskripsi wajib diisi.',
-            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
-            'gambar.required'    => 'Foto pengurus wajib diupload.',
+            'nama.required'    => 'Nama wajib diisi.',
+            'nama.max'         => 'Nama maksimal 100 karakter.',
+            'nama.unique'      => 'Nama sudah digunakan.',
+            'nama.regex'       => 'Nama hanya boleh menggunakan huruf dan spasi.',
+            'jabatan.required' => 'Jabatan wajib diisi.',
+            'jabatan.min'      => 'Jabatan minimal 3 karakter.',
+            'deskripsi.min'    => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'    => 'Deskripsi maksimal 500 karakter.',
+            'gambar.image'     => 'File harus berupa gambar.',
+            'gambar.mimes'     => 'Format gambar harus jpeg, png, jpg, atau gif.',
+            'gambar.max'       => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         $data = $request->only('nama', 'jabatan', 'deskripsi');
-        $data['gambar'] = $request->file('gambar')->store('pengurus', 'public');
+
+        // Jika ada upload baru
+        if ($request->hasFile('gambar')) {
+            $data['gambar'] = $request->file('gambar')->store('pengurus', 'public');
+        }
+        // Jika tidak ada upload baru tapi ada gambar temp
+        elseif ($request->filled('gambar_temp') && Storage::disk('public')->exists('tmp/'.$request->gambar_temp)) {
+            $filename = 'pengurus/'.$request->gambar_temp;
+            Storage::disk('public')->move('tmp/'.$request->gambar_temp, $filename);
+            $data['gambar'] = $filename;
+        }
 
         Pengurus::create($data);
 
@@ -46,23 +67,25 @@ class PengurusController extends Controller
                          ->with('success', 'Pengurus berhasil ditambahkan');
     }
 
+    public function edit(Pengurus $pengurus)
+    {
+        return view('admin.penguruses.edit', compact('pengurus'));
+    }
+
     public function update(Request $request, Pengurus $pengurus)
     {
         $request->validate([
-            'nama'      => 'required|min:3|max:100|unique:penguruses,nama,' . $pengurus->id,
+            'nama'=> [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:penguruses,nama,'.$pengurus->id,
+            ],
             'jabatan'   => 'required|min:3|max:100',
-            'deskripsi' => 'required|string|min:10',
+            'deskripsi' => 'nullable|string|min:10|max:500',
             'gambar'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            'nama.required'      => 'Nama wajib diisi.',
-            'nama.min'           => 'Nama minimal 3 karakter.',
-            'jabatan.required'   => 'Jabatan wajib diisi.',
-            'jabatan.min'        => 'Jabatan minimal 3 karakter.',
-            'deskripsi.required' => 'Deskripsi wajib diisi.',
-            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
-            'gambar.image'       => 'File harus berupa gambar.',
-            'gambar.mimes'       => 'Format gambar harus jpeg, png, jpg, atau gif.',
-            'gambar.max'         => 'Ukuran gambar maksimal 2MB.',
+            'gambar_temp' => 'nullable|string'
         ]);
 
         $data = $request->only('nama', 'jabatan', 'deskripsi');
@@ -72,12 +95,20 @@ class PengurusController extends Controller
                 Storage::disk('public')->delete($pengurus->gambar);
             }
             $data['gambar'] = $request->file('gambar')->store('pengurus', 'public');
+        } elseif ($request->filled('gambar_temp') && Storage::disk('public')->exists('tmp/'.$request->gambar_temp)) {
+            // pindahkan dari tmp ke folder pengurus
+            if ($pengurus->gambar && Storage::disk('public')->exists($pengurus->gambar)) {
+                Storage::disk('public')->delete($pengurus->gambar);
+            }
+            $filename = 'pengurus/'.$request->gambar_temp;
+            Storage::disk('public')->move('tmp/'.$request->gambar_temp, $filename);
+            $data['gambar'] = $filename;
         }
 
         $pengurus->update($data);
 
         return redirect()->route('admin.penguruses.index')
-                        ->with('success', 'Pengurus berhasil diperbarui');
+                         ->with('success', 'Pengurus berhasil diperbarui');
     }
 
     public function destroy(Pengurus $pengurus)
@@ -90,5 +121,18 @@ class PengurusController extends Controller
 
         return redirect()->route('admin.penguruses.index')
                          ->with('success', 'Pengurus berhasil dihapus');
+    }
+
+    // 🔹 Upload sementara
+    public function uploadTemp(Request $request)
+    {
+        $request->validate([
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $filename = uniqid().'.'.$request->file('gambar')->getClientOriginalExtension();
+        $request->file('gambar')->storeAs('tmp', $filename, 'public');
+
+        return response()->json(['filename' => $filename]);
     }
 }

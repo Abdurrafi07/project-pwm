@@ -25,16 +25,23 @@ class DaerahController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama'      => 'required|string|min:3|max:100|unique:daerahs,nama',
-            'deskripsi' => 'required|string|min:10',
+            'nama'      => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:daerahs,nama' . (isset($daerah) ? ',' . $daerah->id : ''),
+            ],
+            'deskripsi' => 'nullable|string|min:10|max:100',
         ], [
             'nama.required'      => 'Nama daerah wajib diisi.',
-            'nama.min'           => 'Nama daerah minimal 3 karakter.',
             'nama.max'           => 'Nama daerah maksimal 100 karakter.',
             'nama.unique'        => 'Nama daerah sudah digunakan.',
-            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'nama.regex'         => 'Nama daerah hanya boleh menggunakan huruf dan spasi.',
             'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 100 karakter.',
         ]);
+
 
         Daerah::create($request->only('nama', 'deskripsi'));
 
@@ -50,17 +57,22 @@ class DaerahController extends Controller
     public function update(Request $request, Daerah $daerah)
     {
         $request->validate([
-            'nama'      => 'required|string|min:3|max:100|unique:daerahs,nama,' . $daerah->id,
-            'deskripsi' => 'required|string|min:10',
+            'nama'      => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:daerahs,nama' . (isset($daerah) ? ',' . $daerah->id : ''),
+            ],
+            'deskripsi' => 'nullable|string|min:10|max:100',
         ], [
             'nama.required'      => 'Nama daerah wajib diisi.',
-            'nama.min'           => 'Nama daerah minimal 3 karakter.',
             'nama.max'           => 'Nama daerah maksimal 100 karakter.',
             'nama.unique'        => 'Nama daerah sudah digunakan.',
-            'deskripsi.required' => 'Deskripsi wajib diisi.',
+            'nama.regex'         => 'Nama daerah hanya boleh menggunakan huruf dan spasi.',
             'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 100 karakter.',
         ]);
-
         $daerah->update($request->only('nama', 'deskripsi'));
 
         return redirect()->route('admin.daerah.index')

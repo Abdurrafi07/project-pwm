@@ -92,52 +92,52 @@
 
     <a href="{{ route('admin.umkm.create') }}" class="btn btn-primary mb-3">Tambah UMKM</a>
 
+    <form method="GET" action="{{ route('admin.umkm.index') }}" id="searchForm" class="mb-3 d-flex">
+        <input type="text" name="nama" value="{{ request('nama') }}" 
+            class="form-control" placeholder="Cari UMKM..." id="searchInput">
+    </form>
+
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <!-- Tabel Data -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Pemilik</th>
-                <th>No Telp</th>
-                <th>Jumlah Karyawan</th>
-                <th>Kategori</th>
-                <th>Daerah</th>
-                <th>Sektor</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($umkms as $umkm)
-                <tr>
-                    <td>{{ $umkm->id }}</td>
-                    <td>{{ $umkm->nama }}</td>
-                    <td>{{ $umkm->pemilik }}</td>
-                    <td>{{ $umkm->no_telp }}</td>
-                    <td>{{ $umkm->jumlah_karyawan }}</td>
-                    <td>{{ $umkm->kategori->nama }}</td>
-                    <td>{{ $umkm->daerah->nama }}</td>
-                    <td>{{ $umkm->sektor->nama }}</td>
-                    <td>
-                        <a href="{{ route('admin.umkm.edit', $umkm) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('admin.umkm.destroy', $umkm) }}" method="POST" class="d-inline">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    {{ $umkms->withQueryString()->links('layouts.pagination') }}
+    <div id="umkmTable">
+        @include('admin.umkm.table')
+    </div>
+    
 </div>
 
 <!-- Chart.js -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let timer = null;
+
+    $('#searchInput').on('keyup', function() {
+        clearTimeout(timer);
+        let keyword = $(this).val();
+
+        timer = setTimeout(() => {
+            $.ajax({
+                url: "{{ route('admin.umkm.index') }}",
+                type: "GET",
+                data: { nama: keyword },
+                success: function(data) {
+                    $('#umkmTable').html($(data).find('#umkmTable').html());
+                }
+            });
+        }, 400); // debounce biar gak terlalu sering
+    });
+
+    // Pagination AJAX
+    $(document).on('click', '#umkmTable .pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+        $.get(url, function(data) {
+            $('#umkmTable').html($(data).find('#umkmTable').html());
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

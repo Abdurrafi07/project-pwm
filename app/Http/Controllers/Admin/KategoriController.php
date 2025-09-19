@@ -26,15 +26,21 @@ class KategoriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama'      => 'required|string|min:3|max:100|unique:kategoris,nama',
-            'deskripsi' => 'required|string|min:10',
+            'nama'      => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:kategoris,nama' . (isset($kategori) ? ',' . $kategori->id : ''),
+            ],
+            'deskripsi' => 'nullable|string|min:10|max:100',
         ], [
             'nama.required'      => 'Nama kategori wajib diisi.',
-            'nama.min'           => 'Nama kategori minimal 3 karakter.',
             'nama.max'           => 'Nama kategori maksimal 100 karakter.',
             'nama.unique'        => 'Nama kategori sudah digunakan.',
-            'deskripsi.required' => 'Deskripsi kategori wajib diisi.',
-            'deskripsi.min'      => 'Deskripsi kategori minimal 10 karakter.',
+            'nama.regex'         => 'Nama kategori hanya boleh menggunakan huruf dan spasi.',
+            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 100 karakter.',
         ]);
 
         Kategori::create($request->only('nama', 'deskripsi'));
@@ -51,15 +57,21 @@ class KategoriController extends Controller
     public function update(Request $request, Kategori $kategori)
     {
         $request->validate([
-            'nama'      => 'required|string|min:3|max:100|unique:kategoris,nama,' . $kategori->id,
-            'deskripsi' => 'required|string|min:10',
+            'nama'      => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:kategoris,nama' . (isset($kategori) ? ',' . $kategori->id : ''),
+            ],
+            'deskripsi' => 'nullable|string|min:10|max:100',
         ], [
             'nama.required'      => 'Nama kategori wajib diisi.',
-            'nama.min'           => 'Nama kategori minimal 3 karakter.',
             'nama.max'           => 'Nama kategori maksimal 100 karakter.',
             'nama.unique'        => 'Nama kategori sudah digunakan.',
-            'deskripsi.required' => 'Deskripsi kategori wajib diisi.',
-            'deskripsi.min'      => 'Deskripsi kategori minimal 10 karakter.',
+            'nama.regex'         => 'Nama kategori hanya boleh menggunakan huruf dan spasi.',
+            'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 100 karakter.',
         ]);
 
         $kategori->update($request->only('nama', 'deskripsi'));

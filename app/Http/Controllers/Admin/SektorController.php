@@ -25,14 +25,21 @@ class SektorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama'      => 'required|min:3|max:50|unique:sektors,nama',
-            'deskripsi' => 'nullable|string|min:10',
+            'nama'      => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:sektors,nama' . (isset($sektor) ? ',' . $sektor->id : ''),
+            ],
+            'deskripsi' => 'nullable|string|min:10|max:100',
         ], [
             'nama.required'      => 'Nama sektor wajib diisi.',
-            'nama.min'           => 'Nama sektor minimal 3 karakter.',
-            'nama.max'           => 'Nama sektor maksimal 50 karakter.',
-            'nama.unique'        => 'Nama sektor sudah digunakan, pilih yang lain.',
+            'nama.max'           => 'Nama sektor maksimal 100 karakter.',
+            'nama.unique'        => 'Nama sektor sudah digunakan.',
+            'nama.regex'         => 'Nama sektor hanya boleh menggunakan huruf dan spasi.',
             'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 100 karakter.',
         ]);
 
         Sektor::create($request->only('nama', 'deskripsi'));
@@ -49,14 +56,21 @@ class SektorController extends Controller
     public function update(Request $request, Sektor $sektor)
     {
         $request->validate([
-            'nama'      => 'required|min:3|max:100|unique:sektors,nama,' . $sektor->id,
-            'deskripsi' => 'nullable|string|min:10',
+            'nama'      => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z\s]+$/',
+                'unique:sektors,nama' . (isset($sektor) ? ',' . $sektor->id : ''),
+            ],
+            'deskripsi' => 'nullable|string|min:10|max:100',
         ], [
             'nama.required'      => 'Nama sektor wajib diisi.',
-            'nama.min'           => 'Nama sektor minimal 3 karakter.',
             'nama.max'           => 'Nama sektor maksimal 100 karakter.',
-            'nama.unique'        => 'Nama sektor sudah digunakan, pilih yang lain.',
+            'nama.unique'        => 'Nama sektor sudah digunakan.',
+            'nama.regex'         => 'Nama sektor hanya boleh menggunakan huruf dan spasi.',
             'deskripsi.min'      => 'Deskripsi minimal 10 karakter.',
+            'deskripsi.max'      => 'Deskripsi maksimal 100 karakter.',
         ]);
 
         $sektor->update($request->only('nama', 'deskripsi'));

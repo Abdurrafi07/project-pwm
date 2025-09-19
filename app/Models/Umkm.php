@@ -12,6 +12,15 @@ class Umkm extends Model
     protected $fillable = [
         'nama',
         'pemilik',
+        'jenis_kelamin',
+        'usia',
+        'pendidikan_terakhir',
+        'tahun_berdiri',
+        'status_lokasi',
+        'sumber_modal',
+        'metode_pemasaran',
+        'hambatan_pemasaran',
+        'kebutuhan_pengembangan',
         'alamat',
         'no_telp',            // ✅ nomor telepon
         'jumlah_karyawan',    // ✅ jumlah karyawan

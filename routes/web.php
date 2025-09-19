@@ -72,6 +72,10 @@ Route::middleware(['auth', 'admin', 'active'])
             'lowongan' => LowonganController::class,
         ]);
 
+        // Upload gambar sementara untuk berita
+        Route::post('/news/upload-temp', [NewsController::class, 'uploadTemp'])->name('news.upload.temp');
+        Route::post('/pengurus/upload-temp', [PengurusController::class, 'uploadTemp'])->name('pengurus.upload.temp');
+
         // Lowongan management
         Route::get('lowongan-history', [LowonganController::class, 'history'])->name('lowongan.history');
 

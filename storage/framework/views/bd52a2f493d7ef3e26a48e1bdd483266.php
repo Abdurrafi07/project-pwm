@@ -20,7 +20,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                   value="<?php echo e(old('judul')); ?>" required>
+                   value="<?php echo e(old('judul')); ?>">
             <?php $__errorArgs = ['judul'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -37,6 +37,7 @@ unset($__errorArgs, $__bag); ?>
         <div class="mb-3">
             <label class="form-label">Deskripsi</label>
             <textarea name="deskripsi" 
+                      id="deskripsi"
                       class="form-control <?php $__errorArgs = ['deskripsi'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -45,7 +46,12 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                      rows="4" required><?php echo e(old('deskripsi')); ?></textarea>
+                      rows="4" 
+                      minlength="100"
+                      maxlength="5000"><?php echo e(old('deskripsi')); ?></textarea>
+            <small id="deskripsiHelp" class="text-muted">
+                <span id="deskripsiCount">0</span>/5000 karakter (min. 100)
+            </small>
             <?php $__errorArgs = ['deskripsi'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -72,7 +78,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                       value="<?php echo e(old('perusahaan')); ?>" required>
+                       value="<?php echo e(old('perusahaan')); ?>">
                 <?php $__errorArgs = ['perusahaan'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -96,7 +102,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                       value="<?php echo e(old('lokasi')); ?>" required>
+                       value="<?php echo e(old('lokasi')); ?>">
                 <?php $__errorArgs = ['lokasi'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -113,7 +119,7 @@ unset($__errorArgs, $__bag); ?>
         
         <div class="mb-3">
             <label class="form-label">No HP/WA</label>
-            <input type="text" 
+            <input type="number" 
                    name="no_hp" 
                    class="form-control <?php $__errorArgs = ['no_hp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -124,7 +130,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
                    value="<?php echo e(old('no_hp')); ?>" 
-                   required 
                    pattern="[0-9]{10,13}" 
                    title="Harus 10–13 digit angka">
             <?php $__errorArgs = ['no_hp'];
@@ -152,7 +157,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                   accept="image/*" required>
+                   accept="image/*">
             <?php $__errorArgs = ['gambar'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -179,7 +184,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                       value="<?php echo e(old('tanggal_mulai')); ?>" required>
+                       value="<?php echo e(old('tanggal_mulai')); ?>">
                 <?php $__errorArgs = ['tanggal_mulai'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -203,7 +208,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                       value="<?php echo e(old('tanggal_akhir')); ?>" required>
+                       value="<?php echo e(old('tanggal_akhir')); ?>">
                 <?php $__errorArgs = ['tanggal_akhir'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -222,6 +227,29 @@ unset($__errorArgs, $__bag); ?>
         <a href="<?php echo e(route('admin.lowongan.index')); ?>" class="btn btn-secondary">Batal</a>
     </form>
 </div>
+
+
+<script>
+    const deskripsi = document.getElementById('deskripsi');
+    const deskripsiCount = document.getElementById('deskripsiCount');
+    const deskripsiHelp = document.getElementById('deskripsiHelp');
+
+    function updateCount() {
+        const length = deskripsi.value.length;
+        deskripsiCount.textContent = length;
+
+        if (length < 100) {
+            deskripsiHelp.classList.remove('text-muted');
+            deskripsiHelp.classList.add('text-danger');
+        } else {
+            deskripsiHelp.classList.remove('text-danger');
+            deskripsiHelp.classList.add('text-muted');
+        }
+    }
+
+    deskripsi.addEventListener('input', updateCount);
+    updateCount(); // inisialisasi
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\project-pwm\resources\views/admin/lowongan/create.blade.php ENDPATH**/ ?>

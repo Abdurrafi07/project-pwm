@@ -95,12 +95,21 @@
 
     <a href="<?php echo e(route('admin.umkm.create')); ?>" class="btn btn-primary mb-3">Tambah UMKM</a>
 
+    <form method="GET" action="<?php echo e(route('admin.umkm.index')); ?>" id="searchForm" class="mb-3 d-flex">
+        <input type="text" name="nama" value="<?php echo e(request('nama')); ?>" 
+            class="form-control" placeholder="Cari UMKM..." id="searchInput">
+    </form>
+
     <?php if(session('success')): ?>
         <div class="alert alert-success"><?php echo e(session('success')); ?></div>
     <?php endif; ?>
 
     <!-- Tabel Data -->
-    <table class="table table-bordered">
+    <div id="umkmTable">
+        <?php echo $__env->make('admin.umkm.table', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    </div>
+
+    <!-- <table class="table table-bordered">
         <thead>
             <tr>
                 <th>No</th>
@@ -135,13 +144,41 @@
                 </tr>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </tbody>
-    </table>
+    </table> -->
 
-    <?php echo e($umkms->withQueryString()->links('layouts.pagination')); ?>
-
+    <!-- <?php echo e($umkms->withQueryString()->links('layouts.pagination')); ?> -->
 </div>
 
 <!-- Chart.js -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    let timer = null;
+
+    $('#searchInput').on('keyup', function() {
+        clearTimeout(timer);
+        let keyword = $(this).val();
+
+        timer = setTimeout(() => {
+            $.ajax({
+                url: "<?php echo e(route('admin.umkm.index')); ?>",
+                type: "GET",
+                data: { nama: keyword },
+                success: function(data) {
+                    $('#umkmTable').html($(data).find('#umkmTable').html());
+                }
+            });
+        }, 400); // debounce biar gak terlalu sering
+    });
+
+    // Pagination AJAX
+    $(document).on('click', '#umkmTable .pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+        $.get(url, function(data) {
+            $('#umkmTable').html($(data).find('#umkmTable').html());
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
