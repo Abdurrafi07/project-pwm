@@ -189,13 +189,18 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
     const bulanLabels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 
+    // === Data dari backend ===
     const statistikBulanan = @json($statistikBulanan);
     const statistikTahunan = @json($statistikTahunan);
     const karyawanBulanan  = @json($karyawanBulanan);
     const kategoriBulanan  = @json($kategoriBulanan);
     const daerahBulanan    = @json($daerahBulanan);
     const sektorBulanan    = @json($sektorBulanan);
+    const kategoris        = @json($kategoris);
+    const daerahs          = @json($daerahs);
+    const sektors          = @json($sektors);
 
+    // === Data UMKM & Karyawan per bulan ===
     let dataBulanan = Array(12).fill(0);
     for (const [bulan, total] of Object.entries(statistikBulanan)) {
         const idx = parseInt(bulan) - 1;
@@ -203,9 +208,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let dataKaryawan = Array(12).fill(0);
-    for (const [bulan, total] of Object.entries(karyawanBulanan))
-        dataKaryawan[bulan - 1] = total ?? 0;
+    for (const [bulan, total] of Object.entries(karyawanBulanan)) {
+        const idx = parseInt(bulan) - 1;
+        if (idx >= 0 && idx < 12) dataKaryawan[idx] = total ?? 0;
+    }
 
+    // === Helper dataset multi-series ===
     function buildDataset(obj) {
         return Object.keys(obj).map((key,i)=>({
             label:key,
@@ -219,13 +227,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const datasetsDaerah   = buildDataset(daerahBulanan);
     const datasetsSektor   = buildDataset(sektorBulanan);
 
+    // === Chart Utama ===
     const ctx = document.getElementById('chartUtama').getContext('2d');
     let chartUtama = new Chart(ctx,{
         type:'line',
-        data:{labels:bulanLabels,
-              datasets:[{label:'Total UMKM',data:dataBulanan,borderColor:colors[0],fill:false}]}
+        data:{
+            labels:bulanLabels,
+            datasets:[{label:'Total UMKM',data:dataBulanan,borderColor:colors[0],fill:false}]
+        }
     });
 
+    // === Summary Cards ===
     function updateSummaryCards(labels, values){
         const c=document.getElementById("summaryCards");
         c.innerHTML="";
@@ -240,20 +252,22 @@ document.addEventListener('DOMContentLoaded', function () {
               </div>
             </div>`;
         });
-        const total=values.reduce((a,b)=>a+(parseInt(b)||0),0);
+        // gunakan total dari backend agar sesuai filter tahun
+        const totalFromBackend = {{ $totalUmkm }};
         c.innerHTML+=`
         <div class="col-md-3 col-6 mb-3">
           <div class="card text-center shadow-sm bg-light">
             <div class="card-body p-2">
               <h6 class="mb-1">Grand Total</h6>
-              <h5 class="fw-bold text-success mb-0">${total}</h5>
+              <h5 class="fw-bold text-success mb-0">${totalFromBackend}</h5>
             </div>
           </div>
         </div>`;
     }
 
-    function updateChart(type,bulan=null){
-        let ds=[],lbl=[],val=[];
+    // === Update Chart & Summary ===
+    function updateChart(type, bulan=null){
+        let ds=[], lbl=[], val=[];
         if(type==='umkm'){
             let d=[...dataBulanan];
             if(bulan!==null) d=[d[bulan]];
@@ -268,58 +282,59 @@ document.addEventListener('DOMContentLoaded', function () {
             val=bulan!==null?[dataKaryawan[bulan]]:dataKaryawan;
         } else if(type==='kategori'){
             ds=datasetsKategori;
-            lbl=Object.keys(kategoriBulanan);
-            val=lbl.map(k=>Object.values(kategoriBulanan[k]).reduce((a,b)=>a+b,0));
+            lbl=kategoris.map(k=>k.nama);
+            val=lbl.map(nama => kategoriBulanan[nama]
+                ? Object.values(kategoriBulanan[nama]).reduce((a,b)=>a+b,0)
+                : 0);
         } else if(type==='daerah'){
             ds=datasetsDaerah;
-            lbl=Object.keys(daerahBulanan);
-            val=lbl.map(k=>Object.values(daerahBulanan[k]).reduce((a,b)=>a+b,0));
+            lbl=daerahs.map(d=>d.nama);
+            val=lbl.map(nama => daerahBulanan[nama]
+                ? Object.values(daerahBulanan[nama]).reduce((a,b)=>a+b,0)
+                : 0);
         } else if(type==='sektor'){
             ds=datasetsSektor;
-            lbl=Object.keys(sektorBulanan);
-            val=lbl.map(k=>Object.values(sektorBulanan[k]).reduce((a,b)=>a+b,0));
+            lbl=sektors.map(s=>s.nama);
+            val=lbl.map(nama => sektorBulanan[nama]
+                ? Object.values(sektorBulanan[nama]).reduce((a,b)=>a+b,0)
+                : 0);
         }
-        chartUtama.data={labels:bulanLabels,datasets:ds};
+        chartUtama.data = { labels: lbl, datasets: ds };
         chartUtama.update();
-        updateSummaryCards(lbl,val);
+        updateSummaryCards(lbl, val);
     }
 
     // === Event Listeners ===
     document.getElementById('chartSelector').addEventListener('change',()=> {
         updateChart(document.getElementById('chartSelector').value);
     });
-
     document.querySelectorAll('.bulan-btn').forEach(btn=>{
         btn.addEventListener('click',function(){
-            const b=this.dataset.bulan;
-            const bulanParam = b==='all' ? 'all' : parseInt(b);
-            // Update URL dan reload data server untuk tabel
-            let url=new URL(window.location.href);
-            url.searchParams.set('bulan', bulanParam);
-            window.location.href=url.toString();
+            const b = this.dataset.bulan;
+            if(b === 'all'){ updateChart('umkm', null); }
+            else { updateChart('umkm', parseInt(b)-1); }
         });
     });
-
     document.getElementById('tahunFilter').addEventListener('change',function(){
         let url=new URL(window.location.href);
         url.searchParams.set('tahun',this.value);
         window.location.href=url.toString();
     });
 
-    // default chart
+    // default chart saat load
     updateChart('umkm');
 
-    // AJAX search dengan ikut tahun/bulan
+    // === AJAX Search Tabel UMKM ===
     let timer=null;
     $('#searchInput').on('input',function(){
         clearTimeout(timer);
         const keyword=$(this).val();
         timer=setTimeout(()=>{
             $.get("{{ route('noauth.umkm.index') }}",
-                  { nama:keyword, tahun:$('input[name="tahun"]').val(), bulan:$('input[name="bulan"]').val() },
-                  function(data){
-                      $('#umkmTable').html($(data).find('#umkmTable').html());
-                  });
+                { nama:keyword, tahun:$('input[name="tahun"]').val(), bulan:$('input[name="bulan"]').val() },
+                function(data){
+                    $('#umkmTable').html($(data).find('#umkmTable').html());
+                });
         },300);
     });
     $(document).on('click','#umkmTable .pagination a',function(e){
@@ -329,30 +344,94 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // chart kecil lain
+    // === Chart kecil tambahan (klik untuk filter tabel) ===
+    function redirectWithFilter(type,label){
+        let url = new URL(window.location.href);
+        if(type==='kategori'){
+            const item = kategoris.find(k=>k.nama===label);
+            if(item) url.searchParams.set('kategori_id', item.id);
+        }
+        if(type==='daerah'){
+            const item = daerahs.find(d=>d.nama===label);
+            if(item) url.searchParams.set('daerah_id', item.id);
+        }
+        if(type==='sektor'){
+            const item = sektors.find(s=>s.nama===label);
+            if(item) url.searchParams.set('sektor_id', item.id);
+        }
+        window.location.href = url.toString();
+    }
+
     function simpleLineChart(id,l,d){
         new Chart(document.getElementById(id),{
             type:'line',
             data:{labels:l,datasets:[{label:'Total',data:d,borderColor:colors[2],fill:false}]}
         });
     }
-    function simpleBarChart(id,l,d){
+    function simpleBarChart(id,l,d,type){
         new Chart(document.getElementById(id),{
             type:'bar',
-            data:{labels:l,datasets:[{label:'Total',data:d,backgroundColor:l.map((_,i)=>colors[i%colors.length])}]}
+            data:{labels:l,datasets:[{label:'Total',data:d,backgroundColor:l.map((_,i)=>colors[i%colors.length])}]},
+            options:{
+                onClick:(evt,els)=>{ if(els.length>0) redirectWithFilter(type,l[els[0].index]); }
+            }
         });
     }
-    function simplePieChart(id,l,d){
+
+    // === Warna tetap untuk pie chart kategori ===
+    const warnaKategori = [
+        'rgba(255, 99, 132, 0.6)',   // Mikro
+        'rgba(54, 162, 235, 0.6)',   // Kecil
+        'rgba(255, 206, 86, 0.6)'    // Menengah
+    ];
+
+    function simplePieChart(id,l,d,type){
         new Chart(document.getElementById(id),{
             type:'pie',
-            data:{labels:l,datasets:[{data:d,backgroundColor:l.map((_,i)=>colors[i%colors.length])}]}
+            data:{
+                labels:l,
+                datasets:[{
+                    data:d,
+                    backgroundColor:warnaKategori, // tetap konsisten
+                    borderColor:warnaKategori.map(c=>c.replace('0.6','1')),
+                    borderWidth:1
+                }]
+            },
+            options:{
+                plugins:{ legend:{ position:'bottom' } },
+                onClick:(evt,els)=>{ if(els.length>0) redirectWithFilter(type,l[els[0].index]); }
+            }
         });
     }
+
+    // === Fix: pakai data master agar chart kecil tidak berubah bentuk ===
+    const lblKategori = kategoris.map(k => k.nama);
+    const valKategori = lblKategori.map(nama => {
+        return kategoriBulanan[nama]
+            ? Object.values(kategoriBulanan[nama]).reduce((a,b)=>a+b,0)
+            : 0;
+    });
+
+    const lblDaerah = daerahs.map(d => d.nama);
+    const valDaerah = lblDaerah.map(nama => {
+        return daerahBulanan[nama]
+            ? Object.values(daerahBulanan[nama]).reduce((a,b)=>a+b,0)
+            : 0;
+    });
+
+    const lblSektor = sektors.map(s => s.nama);
+    const valSektor = lblSektor.map(nama => {
+        return sektorBulanan[nama]
+            ? Object.values(sektorBulanan[nama]).reduce((a,b)=>a+b,0)
+            : 0;
+    });
+
+    // === Render Chart kecil ===
     simpleLineChart('chartBulanan',bulanLabels,dataBulanan);
     simpleLineChart('chartTahunan',Object.keys(statistikTahunan),Object.values(statistikTahunan));
-    simpleBarChart('chartDaerah',Object.keys(daerahBulanan),Object.values(daerahBulanan).map(v=>Object.values(v).reduce((a,b)=>a+b,0)));
-    simpleBarChart('chartSektor',Object.keys(sektorBulanan),Object.values(sektorBulanan).map(v=>Object.values(v).reduce((a,b)=>a+b,0)));
-    simplePieChart('chartKategori',Object.keys(kategoriBulanan),Object.values(kategoriBulanan).map(v=>Object.values(v).reduce((a,b)=>a+b,0)));
+    simpleBarChart('chartDaerah',lblDaerah,valDaerah,'daerah');
+    simpleBarChart('chartSektor',lblSektor,valSektor,'sektor');
+    simplePieChart('chartKategori',lblKategori,valKategori,'kategori');
 });
 </script>
 @endsection

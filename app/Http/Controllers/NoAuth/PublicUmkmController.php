@@ -102,10 +102,18 @@ class PublicUmkmController extends Controller
             ->pluck('total', 'bulan');
 
         // Tahunan kumulatif semua tahun
-        $statistikTahunanRaw = Umkm::selectRaw('YEAR(created_at) as tahun, COUNT(*) as total')
+        // $statistikTahunanRaw = Umkm::selectRaw('YEAR(created_at) as tahun, COUNT(*) as total')
+        //     ->groupBy('tahun')
+        //     ->orderBy('tahun')
+        //     ->pluck('total', 'tahun');
+
+        // Tahunan kumulatif semua tahun -> pakai filteredQuery
+        $statistikTahunanRaw = (clone $filteredQuery)
+            ->selectRaw('YEAR(created_at) as tahun, COUNT(*) as total')
             ->groupBy('tahun')
             ->orderBy('tahun')
             ->pluck('total', 'tahun');
+
 
         $cumulativeTahunan = [];
         $running = 0;
