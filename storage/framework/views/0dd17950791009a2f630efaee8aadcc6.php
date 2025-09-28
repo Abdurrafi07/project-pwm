@@ -108,45 +108,7 @@
     <div id="umkmTable">
         <?php echo $__env->make('admin.umkm.table', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </div>
-
-    <!-- <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Pemilik</th>
-                <th>No Telp</th>
-                <th>Jumlah Karyawan</th>
-                <th>Kategori</th>
-                <th>Daerah</th>
-                <th>Sektor</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php $__currentLoopData = $umkms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $umkm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <tr>
-                    <td><?php echo e($umkm->id); ?></td>
-                    <td><?php echo e($umkm->nama); ?></td>
-                    <td><?php echo e($umkm->pemilik); ?></td>
-                    <td><?php echo e($umkm->no_telp); ?></td>
-                    <td><?php echo e($umkm->jumlah_karyawan); ?></td>
-                    <td><?php echo e($umkm->kategori->nama); ?></td>
-                    <td><?php echo e($umkm->daerah->nama); ?></td>
-                    <td><?php echo e($umkm->sektor->nama); ?></td>
-                    <td>
-                        <a href="<?php echo e(route('admin.umkm.edit', $umkm)); ?>" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="<?php echo e(route('admin.umkm.destroy', $umkm)); ?>" method="POST" class="d-inline">
-                            <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        </tbody>
-    </table> -->
-
-    <!-- <?php echo e($umkms->withQueryString()->links('layouts.pagination')); ?> -->
+    
 </div>
 
 <!-- Chart.js -->

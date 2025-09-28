@@ -34,7 +34,7 @@ class UmkmSeeder extends Seeder
                 'jenis_kelamin'         => $faker->randomElement($jenisKelamin),
                 'usia'                  => $faker->randomElement($usia),
                 'pendidikan_terakhir'   => $faker->randomElement($pendidikan),
-                'tahun_berdiri'         => $faker->year,
+                'tahun_berdiri'         => $faker->numberBetween(2024, 2027), // ✅ dibatasi 2024 - 2027
                 'status_lokasi'         => $faker->randomElement($statusLokasi),
                 'sumber_modal'          => $faker->randomElement($sumberModal),
                 'metode_pemasaran'      => $faker->randomElement($metodePemasaran),

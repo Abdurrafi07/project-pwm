@@ -45,12 +45,12 @@
                 class="form-control @error('deskripsi') is-invalid @enderror" 
                 rows="4"
                 minlength="3"
-                maxlength="100"
+                maxlength="500"
             >{{ old('deskripsi', $pengurus->deskripsi) }}</textarea>
 
             {{-- Awalnya disembunyikan --}}
             <small id="deskripsiHelp" class="text-muted d-none">
-                <span id="deskripsiCount">0</span>/100 karakter (min. 3)
+                <span id="deskripsiCount">0</span>/500 karakter (min. 3)
             </small>
 
             @error('deskripsi')

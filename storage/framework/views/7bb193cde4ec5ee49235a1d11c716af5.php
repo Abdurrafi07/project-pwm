@@ -64,6 +64,11 @@
         </div>
     </div>
 
+    <form method="GET" action="<?php echo e(route('noauth.umkm.index')); ?>" id="searchForm" class="mb-3 d-flex">
+        <input type="text" name="nama" value="<?php echo e(request('nama')); ?>" 
+            class="form-control" placeholder="Cari UMKM..." id="searchInput">
+    </form>
+
     <!-- Tabel UMKM -->
     <div class="card mt-4 shadow-sm">
         <div class="card-header bg-dark text-white">Data UMKM</div>
@@ -242,6 +247,36 @@
             }
         });
     });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let timer = null;
+
+// Search auto
+$('#searchInput').on('keyup', function() {
+    clearTimeout(timer);
+    let keyword = $(this).val();
+
+    timer = setTimeout(() => {
+        $.ajax({
+            url: "<?php echo e(route('noauth.lowongan.index')); ?>",
+            type: "GET",
+            data: { q: keyword },
+            success: function(data) {
+                $('#lowonganTable').html($(data).find('#lowonganTable').html());
+            }
+        });
+    }, 400); // debounce
+});
+
+// Pagination AJAX
+$(document).on('click', '#lowonganTable .pagination a', function(e) {
+    e.preventDefault();
+    let url = $(this).attr('href');
+    $.get(url, function(data) {
+        $('#lowonganTable').html($(data).find('#lowonganTable').html());
+    });
+});
 </script>
 <?php $__env->stopSection(); ?>
 

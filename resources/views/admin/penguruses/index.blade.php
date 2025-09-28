@@ -24,7 +24,7 @@
         <tbody>
             @forelse($penguruses as $index => $pengurus)
                 <tr>
-                    <td>{{ $penguruses->firstItem() + $index }}</td>
+                    <td>{{ $pengurus->id }}</td>
                     <td>{{ $pengurus->nama }}</td>
                     <td>{{ $pengurus->jabatan }}</td>
                     <td>{{ $pengurus->deskripsi }}</td>

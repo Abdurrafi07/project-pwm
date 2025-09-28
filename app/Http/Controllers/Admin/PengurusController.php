@@ -11,7 +11,7 @@ class PengurusController extends Controller
 {
     public function index()
     {
-        $penguruses = Pengurus::latest()->paginate(10);
+        $penguruses = Pengurus::orderBy('id', 'asc')->paginate(10);
         return view('admin.penguruses.index', compact('penguruses'));
     }
 

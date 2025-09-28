@@ -321,8 +321,12 @@ unset($__errorArgs, $__bag); ?>
 
         
         <div class="mb-3">
-            <label>No Telp</label>
-            <input type="text" name="no_telp"
+            <label for="no_telp" class="form-label">No Telp</label>
+            <input 
+                type="text" 
+                id="no_telp"
+                name="no_telp" 
+                value="<?php echo e(old('no_telp', $umkm->no_telp)); ?>" 
                 class="form-control <?php $__errorArgs = ['no_telp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -331,14 +335,15 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                value="<?php echo e(old('no_telp', $umkm->no_telp)); ?>"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                placeholder="Masukkan nomor telepon"
+            >
+            <small id="noTelpError" class="text-danger d-none">No telp hanya boleh angka.</small>
             <?php $__errorArgs = ['no_telp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                <div class="invalid-feedback"><?php echo e($message); ?></div>
+$message = $__bag->first($__errorArgs[0]); ?> 
+                <div class="invalid-feedback"><?php echo e($message); ?></div> 
             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -472,6 +477,22 @@ unset($__errorArgs, $__bag); ?>
         <a href="<?php echo e(route('admin.umkm.index')); ?>" class="btn btn-secondary">Batal</a>
     </form>
 </div>
+
+<script>
+    const noTelpInput = document.getElementById('no_telp');
+    const noTelpError = document.getElementById('noTelpError');
+
+    noTelpInput.addEventListener('input', function() {
+        const regex = /^[0-9]*$/; // hanya angka
+
+        if (!regex.test(this.value)) {
+            noTelpError.textContent = "No telp hanya boleh angka.";
+            noTelpError.classList.remove("d-none");
+        } else {
+            noTelpError.classList.add("d-none");
+        }
+    });
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\laragon\www\project-pwm\resources\views\admin\umkm\edit.blade.php ENDPATH**/ ?>

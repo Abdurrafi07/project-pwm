@@ -120,26 +120,29 @@ unset($__errorArgs, $__bag); ?>
 
         
         <div class="mb-3">
-            <label class="form-label">No HP/WA</label>
-            <input type="text" 
-                   name="no_hp" 
-                   class="form-control <?php $__errorArgs = ['no_hp'];
+            <label for="no_telp" class="form-label">No Telp</label>
+            <input 
+                type="text" 
+                id="no_telp"
+                name="no_telp" 
+                value="<?php echo e(old('no_telp', $umkm->no_telp)); ?>" 
+                class="form-control <?php $__errorArgs = ['no_telp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                   value="<?php echo e(old('no_hp', $lowongan->no_hp)); ?>" 
-                   pattern="[0-9]{10,13}" 
-                   title="Harus 10–13 digit angka">
-            <?php $__errorArgs = ['no_hp'];
+unset($__errorArgs, $__bag); ?>"
+                placeholder="Masukkan nomor telepon"
+            >
+            <small id="noTelpError" class="text-danger d-none">No telp hanya boleh angka.</small>
+            <?php $__errorArgs = ['no_telp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                <div class="invalid-feedback"><?php echo e($message); ?></div>
+$message = $__bag->first($__errorArgs[0]); ?> 
+                <div class="invalid-feedback"><?php echo e($message); ?></div> 
             <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -237,18 +240,19 @@ unset($__errorArgs, $__bag); ?>
 
 
 <script>
-    // === Validasi realtime Nama ===
-    const namaInput = document.getElementById('nama');
-    const namaError = document.getElementById('namaError');
 
-    namaInput.addEventListener('input', function() {
-        const regex = /^[A-Za-z\s]*$/;
+    // === Validasi realtime No Telp ===
+    const noTelpInput = document.getElementById('no_telp');
+    const noTelpError = document.getElementById('noTelpError');
+
+    noTelpInput.addEventListener('input', function() {
+        const regex = /^[0-9]*$/; // hanya angka
 
         if (!regex.test(this.value)) {
-            namaError.textContent = "Nama hanya boleh berisi huruf dan spasi.";
-            namaError.classList.remove("d-none");
+            noTelpError.textContent = "No telp hanya boleh angka.";
+            noTelpError.classList.remove("d-none");
         } else {
-            namaError.classList.add("d-none");
+            noTelpError.classList.add("d-none");
         }
     });
 

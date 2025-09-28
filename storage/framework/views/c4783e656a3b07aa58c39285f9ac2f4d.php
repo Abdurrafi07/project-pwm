@@ -24,7 +24,7 @@
         <tbody>
             <?php $__empty_1 = true; $__currentLoopData = $penguruses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $pengurus): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr>
-                    <td><?php echo e($penguruses->firstItem() + $index); ?></td>
+                    <td><?php echo e($pengurus->id); ?></td>
                     <td><?php echo e($pengurus->nama); ?></td>
                     <td><?php echo e($pengurus->jabatan); ?></td>
                     <td><?php echo e($pengurus->deskripsi); ?></td>

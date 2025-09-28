@@ -119,7 +119,7 @@ unset($__errorArgs, $__bag); ?>
         
         <div class="mb-3">
             <label class="form-label">No HP/WA</label>
-            <input type="text" 
+            <input type="number" 
                    name="no_hp" 
                    class="form-control <?php $__errorArgs = ['no_hp'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');

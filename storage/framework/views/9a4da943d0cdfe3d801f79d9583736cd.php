@@ -75,18 +75,22 @@ unset($__errorArgs, $__bag); ?>
         
         <div class="mb-3">
             <label for="penulis" class="form-label">Penulis</label>
-            <input type="text" 
-                   name="penulis" 
-                   id="penulis" 
-                   class="form-control <?php $__errorArgs = ['penulis'];
+            <input 
+                type="text" 
+                id="penulis"
+                name="penulis"
+                value="<?php echo e(old('penulis', $news->penulis)); ?>"
+                class="form-control <?php $__errorArgs = ['penulis'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                   value="<?php echo e(old('penulis', $news->penulis)); ?>">
+unset($__errorArgs, $__bag); ?>"
+                placeholder="Masukkan penulis"
+            />
+            <small id="penulisError" class="text-danger d-none">Penulis hanya boleh berisi huruf dan spasi.</small>
             <?php $__errorArgs = ['penulis'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -139,6 +143,22 @@ unset($__errorArgs, $__bag); ?>
 
 
 <script>
+    
+    const penulisInput = document.getElementById('penulis');
+    const penulisError = document.getElementById('penulisError');
+
+    penulisInput.addEventListener('input', function() {
+        const regex = /^[A-Za-z\s]*$/;
+
+        if (!regex.test(this.value)) {
+            penulisError.textContent = "Penulis hanya boleh huruf dan spasi.";
+            penulisError.classList.remove("d-none");
+        } 
+        else {
+            penulisError.classList.add("d-none");
+        }
+    });
+
     const deskripsi = document.getElementById('deskripsi');
     const deskripsiCount = document.getElementById('deskripsiCount');
     const deskripsiHelp = document.getElementById('deskripsiHelp');
